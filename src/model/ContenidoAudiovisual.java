@@ -1,6 +1,10 @@
 package model;
 
-public abstract class ContenidoAudiovisual {
+/**
+ * Clase abstracta que representa un contenido audiovisual.
+ * Implementa la interfaz Visualizable.
+ */
+public abstract class ContenidoAudiovisual implements Visualizable {
     private static int contar = 0;
     private String titulo;
     private int duracionEnMinutos;
