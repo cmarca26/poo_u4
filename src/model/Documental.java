@@ -54,4 +54,42 @@ public class Documental extends ContenidoAudiovisual {
         }
         System.out.println();
     }
+
+    @Override
+    public String[] toCSV() {
+        String investigadoresStr = "";
+        if (investigadores != null && !investigadores.isEmpty()) {
+            List<String> datos = new ArrayList<>();
+            for (Investigador inv : investigadores) {
+                datos.add(String.join(";", inv.toCSV()));
+            }
+            investigadoresStr = String.join("|", datos);
+        }
+        return new String[] {
+                String.valueOf(getId()),
+                getTitulo(),
+                String.valueOf(getDuracionEnMinutos()),
+                getGenero(),
+                tema,
+                investigadoresStr
+        };
+    }
+
+    @Override
+    public void fromCSV(String[] data) {
+        setTitulo(data[1]);
+        setDuracionEnMinutos(Integer.parseInt(data[2]));
+        setGenero(data[3]);
+        setTema(data[4]);
+        investigadores = new ArrayList<>();
+        if (data.length > 5 && !data[5].isEmpty()) {
+            String[] registros = data[5].split("\\|");
+            for (String registro : registros) {
+                String[] campos = registro.split(";");
+                Investigador inv = new Investigador("", "", "", 0);
+                inv.fromCSV(campos);
+                investigadores.add(inv);
+            }
+        }
+    }
 }

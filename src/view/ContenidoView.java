@@ -6,9 +6,12 @@ import utils.Validador;
 import utils.InputActor;
 import utils.InputTemporada;
 import utils.InputInvestigador;
+
+import java.io.File;
 import java.util.Scanner;
 
 public class ContenidoView {
+    private static final String ARCHIVO_DATOS = "data/contenidos.csv";
     private final ContenidoController controller;
     private final Scanner scanner;
 
@@ -28,6 +31,7 @@ public class ContenidoView {
     }
 
     public void iniciar() {
+        verificarDatosGuardados();
         int opcion;
         do {
             mostrarMenu();
@@ -69,8 +73,9 @@ public class ContenidoView {
             Pelicula pelicula = crearPelicula();
             agregarActoresAPelicula(pelicula);
             controller.agregarPelicula(pelicula);
-            System.out.println("Película agregada correctamente.\n");
-        } catch (IllegalArgumentException e) {
+            controller.guardarContenidos("data/contenidos.csv");
+            System.out.println("Película agregada y guardada correctamente.\n");
+        } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
     }
@@ -101,8 +106,9 @@ public class ContenidoView {
             SerieDeTV serie = crearSerie();
             agregarTemporadasASerie(serie);
             controller.agregarSerie(serie);
-            System.out.println("Serie agregada correctamente.\n");
-        } catch (IllegalArgumentException e) {
+            controller.guardarContenidos("data/contenidos.csv");
+            System.out.println("Serie agregada y guardada correctamente.\n");
+        } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
     }
@@ -132,8 +138,9 @@ public class ContenidoView {
             Documental documental = crearDocumental();
             agregarInvestigadoresADocumental(documental);
             controller.agregarDocumental(documental);
-            System.out.println("Documental agregado correctamente.\n");
-        } catch (IllegalArgumentException e) {
+            controller.guardarContenidos("data/contenidos.csv");
+            System.out.println("Documental agregado y guardado correctamente.\n");
+        } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
     }
@@ -198,5 +205,25 @@ public class ContenidoView {
         int numero = leerEntero();
         Validador.validarNumeroPositivo(numero, campo);
         return numero;
+    }
+
+    // Verifica si existen datos guardados y pregunta al usuario si desea cargarlos
+    private void verificarDatosGuardados() {
+        File archivo = new File(ARCHIVO_DATOS);
+        if (archivo.exists() && archivo.length() > 0) {
+            System.out.print("Se encontraron datos guardados. ¿Desea cargarlos? (s/n): ");
+            String respuesta = scanner.nextLine().trim();
+            if (respuesta.equalsIgnoreCase("s")) {
+                try {
+                    controller.cargarContenidos(ARCHIVO_DATOS);
+                    System.out.println("Datos cargados correctamente.\n");
+                    mostrarContenidos();
+                } catch (Exception e) {
+                    System.out.println("Error al cargar los datos: " + e.getMessage());
+                }
+            } else {
+                System.out.println("Se iniciara con datos vacios.\n");
+            }
+        }
     }
 }

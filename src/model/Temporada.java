@@ -3,7 +3,7 @@ package model;
 /**
  * Clase que representa una temporada de una serie de TV.
  */
-public class Temporada {
+public class Temporada implements CSVSerializable {
     // Número de la temporada
     private int numero;
     // Cantidad de episodios en la temporada
@@ -73,5 +73,32 @@ public class Temporada {
     @Override
     public String toString() {
         return "T" + numero + " (" + añoEstreno + "): " + episodios + " episodios - " + sinopsis;
+    }
+
+    /**
+     * Convierte la temporada a un formato CSV.
+     */
+    @Override
+    public String[] toCSV() {
+        return new String[] {
+            String.valueOf(numero),
+            String.valueOf(episodios),
+            String.valueOf(añoEstreno),
+            sinopsis
+        };
+    }
+
+    /**
+     * Deserializa los datos de la temporada desde un formato CSV.
+     */
+    @Override
+    public void fromCSV(String[] data) {
+        if (data.length != 4) {
+            throw new IllegalArgumentException("Datos insuficientes para deserializar Temporada");
+        }
+        this.numero = Integer.parseInt(data[0]);
+        this.episodios = Integer.parseInt(data[1]);
+        this.añoEstreno = Integer.parseInt(data[2]);
+        this.sinopsis = data[3];
     }
 }

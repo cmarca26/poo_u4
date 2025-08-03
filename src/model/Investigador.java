@@ -3,7 +3,7 @@ package model;
 /**
  * Clase que representa a un Investigador en un documental o contenido audiovisual.
  */
-public class Investigador {
+public class Investigador implements CSVSerializable {
     // Nombre del investigador
     private String nombre;
     // Institución a la que pertenece
@@ -73,5 +73,33 @@ public class Investigador {
     @Override
     public String toString() {
         return nombre + " (" + especialidad + ", " + añosExperiencia + " años) - " + institucion;
+    }
+
+    /**
+     * Convierte el investigador a un formato CSV.
+     */
+    @Override
+    public String[] toCSV() {
+        return new String[] {
+                nombre,
+                institucion,
+                especialidad,
+                String.valueOf(añosExperiencia)
+        };
+    }
+
+    /**
+     * Deserializa los datos desde un formato CSV.
+     * @param data Datos en formato CSV.
+     */
+    @Override
+    public void fromCSV(String[] data) {
+        if (data.length < 4) {
+            throw new IllegalArgumentException("Datos insuficientes para deserializar Investigador");
+        }
+        this.nombre = data[0];
+        this.institucion = data[1];
+        this.especialidad = data[2];
+        this.añosExperiencia = Integer.parseInt(data[3]);
     }
 }

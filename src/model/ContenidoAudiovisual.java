@@ -4,7 +4,7 @@ package model;
  * Clase abstracta que representa un contenido audiovisual.
  * Implementa la interfaz Visualizable.
  */
-public abstract class ContenidoAudiovisual implements Visualizable {
+public abstract class ContenidoAudiovisual implements Visualizable, CSVSerializable {
     private static int contar = 0;
     private String titulo;
     private int duracionEnMinutos;
@@ -45,10 +45,41 @@ public abstract class ContenidoAudiovisual implements Visualizable {
         this.genero = genero;
     }
 
-    // Getter para el campo 'id' (no se proporciona el Setter ya que 'id' se asigna en el constructor y parece ser inmutable)
+    // Getter para el campo 'id' (no se proporciona el Setter ya que 'id' se asigna
+    // en el constructor y parece ser inmutable)
     public int getId() {
         return id;
     }
-    
+
     public abstract void mostrarDetalles();
+
+    /**
+     * Convierte el contenido audiovisual a un formato CSV.
+     */
+    @Override
+    public String[] toCSV() {
+        // Serializa los atributos base
+        return new String[] {
+            String.valueOf(id),
+            titulo,
+            String.valueOf(duracionEnMinutos),
+            genero
+        };
+    }
+
+    /**
+     * Deserializa los datos desde un formato CSV.
+     * 
+     * @param data Datos en formato CSV.
+     */
+    @Override
+    public void fromCSV(String[] data) {
+        // Deserializa los atributos base
+        // El id normalmente es gestionado por el sistema, pero puedes asignarlo si lo necesitas
+        if (data.length > 0) {
+            this.titulo = data[1];
+            this.duracionEnMinutos = Integer.parseInt(data[2]);
+            this.genero = data[3];
+        }
+    }
 }

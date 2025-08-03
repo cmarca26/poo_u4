@@ -55,4 +55,42 @@ public class SerieDeTV extends ContenidoAudiovisual {
         }
         System.out.println();
     }
+
+    @Override
+    public String[] toCSV() {
+        String temporadasStr = "";
+        if (listaTemporadas != null && !listaTemporadas.isEmpty()) {
+            List<String> datos = new ArrayList<>();
+            for (Temporada temp : listaTemporadas) {
+                datos.add(String.join(";", temp.toCSV()));
+            }
+            temporadasStr = String.join("|", datos);
+        }
+        return new String[] {
+                String.valueOf(getId()),
+                getTitulo(),
+                String.valueOf(getDuracionEnMinutos()),
+                getGenero(),
+                String.valueOf(temporadas),
+                temporadasStr
+        };
+    }
+
+    @Override
+    public void fromCSV(String[] data) {
+        setTitulo(data[1]);
+        setDuracionEnMinutos(Integer.parseInt(data[2]));
+        setGenero(data[3]);
+        setTemporadas(Integer.parseInt(data[4]));
+        listaTemporadas = new ArrayList<>();
+        if (data.length > 5 && !data[5].isEmpty()) {
+            String[] registros = data[5].split("\\|");
+            for (String registro : registros) {
+                String[] campos = registro.split(";");
+                Temporada temp = new Temporada(0, 0, 0, "");
+                temp.fromCSV(campos);
+                listaTemporadas.add(temp);
+            }
+        }
+    }
 }
