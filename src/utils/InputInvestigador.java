@@ -4,33 +4,18 @@ import java.util.Scanner;
 import model.Investigador;
 
 public class InputInvestigador {
+
+    /**
+     * Solicita los datos de un investigador al usuario.
+     *
+     * @param scanner Scanner para leer la entrada del usuario.
+     * @return Un objeto Investigador con los datos ingresados.
+     */
     public static Investigador solicitarInvestigador(Scanner scanner) {
-        String nombre = solicitarTexto(scanner, "Nombre del investigador");
-        String institucion = solicitarTexto(scanner, "Institución");
-        String especialidad = solicitarTexto(scanner, "Especialidad");
-        int años = solicitarNumero(scanner, "Años de experiencia");
+        String nombre = InputHelper.solicitarTexto(scanner, "Nombre del investigador");
+        String institucion = InputHelper.solicitarTexto(scanner, "Institución");
+        String especialidad = InputHelper.solicitarTexto(scanner, "Especialidad");
+        int años = InputHelper.solicitarNumero(scanner, "Años de experiencia");
         return new Investigador(nombre, institucion, especialidad, años);
-    }
-
-    private static String solicitarTexto(Scanner scanner, String campo) {
-        System.out.print(campo + ": ");
-        String texto = scanner.nextLine();
-        Validador.validarTexto(texto, campo);
-        return texto;
-    }
-
-    private static int solicitarNumero(Scanner scanner, String campo) {
-        System.out.print(campo + ": ");
-        while (true) {
-            try {
-                int numero = Integer.parseInt(scanner.nextLine());
-                Validador.validarNumeroPositivo(numero, campo);
-                return numero;
-            } catch (NumberFormatException e) {
-                System.out.print("Valor inválido. Intente de nuevo: ");
-            } catch (IllegalArgumentException e) {
-                System.out.println("Error: " + e.getMessage());
-            }
-        }
     }
 }

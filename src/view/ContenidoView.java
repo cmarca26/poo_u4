@@ -2,15 +2,22 @@ package view;
 
 import controller.ContenidoController;
 import model.*;
-import utils.Validador;
 import utils.InputActor;
-import utils.InputTemporada;
+import utils.InputDocumental;
 import utils.InputInvestigador;
+import utils.InputPelicula;
+import utils.InputSerieDeTV;
+import utils.InputTemporada;
+import utils.InputHelper;
 
 import java.io.File;
 import java.util.Scanner;
 
 public class ContenidoView {
+
+    /**
+     * Ruta del archivo donde se guardarán los contenidos audiovisuales.
+     */
     private static final String ARCHIVO_DATOS = "data/contenidos.csv";
     private final ContenidoController controller;
     private final Scanner scanner;
@@ -20,6 +27,10 @@ public class ContenidoView {
         this.scanner = new Scanner(System.in);
     }
 
+    /**
+     * Muestra el menú de opciones para interactuar con los contenidos audiovisuales.
+     * Permite al usuario agregar películas, series de TV, documentales y mostrar todos los contenidos.
+     */
     private void mostrarMenu() {
         System.out.println("\n");
         System.out.println("--- Menú de Contenidos Audiovisuales ---");
@@ -30,21 +41,25 @@ public class ContenidoView {
         System.out.println("0. Salir");
     }
 
+    /**
+     * Inicia la vista de contenidos audiovisuales.
+     * Muestra el menú y permite al usuario interactuar con las opciones.
+     */
     public void iniciar() {
         verificarDatosGuardados();
         int opcion;
         do {
             mostrarMenu();
-            opcion = solicitarOpcion();
+            opcion = InputHelper.solicitarNumero(scanner, "Seleccione una opción: ");
             ejecutarOpcion(opcion);
         } while (opcion != 0);
     }
 
-    private int solicitarOpcion() {
-        System.out.print("Seleccione una opción: ");
-        return leerEntero();
-    }
-
+    /**
+     * Ejecuta la opción seleccionada por el usuario.
+     *
+     * @param opcion La opción seleccionada.
+     */
     private void ejecutarOpcion(int opcion) {
         switch (opcion) {
             case 1:
@@ -67,27 +82,35 @@ public class ContenidoView {
         }
     }
 
+    /**
+     * Agrega una nueva película al sistema.
+     * Solicita los datos de la película y los actores, y los guarda en el controlador.
+     */
     private void agregarPelicula() {
         System.out.println("--- Agregar Película ---");
-        try {
-            Pelicula pelicula = crearPelicula();
-            agregarActoresAPelicula(pelicula);
-            controller.agregarPelicula(pelicula);
-            controller.guardarContenidos("data/contenidos.csv");
-            System.out.println("Película agregada y guardada correctamente.\n");
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-        }
+        Pelicula pelicula = null;
+        boolean exito = false;
+        do {
+            try {
+                pelicula = InputPelicula.solicitarPelicula(scanner);
+                agregarActoresAPelicula(pelicula);
+                controller.agregarPelicula(pelicula);
+                controller.guardarContenidos("data/contenidos.csv");
+                System.out.println("Película agregada y guardada correctamente.\n");
+                exito = true;
+            } catch (Exception e) {
+                System.out.println("Error: " + e.getMessage());
+                System.out.println("Por favor, ingrese los datos nuevamente.\n");
+            }
+        } while (!exito);
     }
 
-    private Pelicula crearPelicula() {
-        String titulo = solicitarTexto("Título");
-        int duracion = solicitarNumero("Duración en minutos");
-        String genero = solicitarTexto("Género");
-        String estudio = solicitarTexto("Estudio");
-        return new Pelicula(titulo, duracion, genero, estudio);
-    }
-
+    /**
+     * Agrega actores a una película.
+     * Permite al usuario agregar múltiples actores hasta que decida no agregar más.
+     *
+     * @param pelicula La película a la que se agregarán los actores.
+     */
     private void agregarActoresAPelicula(Pelicula pelicula) {
         boolean agregarMas;
         do {
@@ -100,26 +123,35 @@ public class ContenidoView {
         } while (agregarMas);
     }
 
+    /**
+     * Agrega una nueva serie de TV al sistema.
+     * Solicita los datos de la serie y las temporadas, y las guarda en el controlador.
+     */
     private void agregarSerie() {
         System.out.println("--- Agregar Serie de TV ---");
-        try {
-            SerieDeTV serie = crearSerie();
-            agregarTemporadasASerie(serie);
-            controller.agregarSerie(serie);
-            controller.guardarContenidos("data/contenidos.csv");
-            System.out.println("Serie agregada y guardada correctamente.\n");
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-        }
+        SerieDeTV serie = null;
+        boolean exito = false;
+        do {
+            try {
+                serie = InputSerieDeTV.solicitarSerieDeTV(scanner);
+                agregarTemporadasASerie(serie);
+                controller.agregarSerie(serie);
+                controller.guardarContenidos("data/contenidos.csv");
+                System.out.println("Serie agregada y guardada correctamente.\n");
+                exito = true;
+            } catch (Exception e) {
+                System.out.println("Error: " + e.getMessage());
+                System.out.println("Por favor, ingrese los datos nuevamente.\n");
+            }
+        } while (!exito);
     }
 
-    private SerieDeTV crearSerie() {
-        String titulo = solicitarTexto("Título");
-        int duracion = solicitarNumero("Duración en minutos");
-        String genero = solicitarTexto("Género");
-        return new SerieDeTV(titulo, duracion, genero, 0);
-    }
-
+    /**
+     * Agrega temporadas a una serie de TV.
+     * Permite al usuario agregar múltiples temporadas hasta que decida no agregar más.
+     *
+     * @param serie La serie de TV a la que se agregarán las temporadas.
+     */
     private void agregarTemporadasASerie(SerieDeTV serie) {
         boolean agregarMas;
         do {
@@ -132,27 +164,35 @@ public class ContenidoView {
         } while (agregarMas);
     }
 
+    /**
+     * Agrega un nuevo documental al sistema.
+     * Solicita los datos del documental y los investigadores, y los guarda en el controlador.
+     */
     private void agregarDocumental() {
         System.out.println("--- Agregar Documental ---");
-        try {
-            Documental documental = crearDocumental();
-            agregarInvestigadoresADocumental(documental);
-            controller.agregarDocumental(documental);
-            controller.guardarContenidos("data/contenidos.csv");
-            System.out.println("Documental agregado y guardado correctamente.\n");
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-        }
+        Documental documental = null;
+        boolean exito = false;
+        do {
+            try {
+                documental = InputDocumental.solicitarDocumental(scanner);
+                agregarInvestigadoresADocumental(documental);
+                controller.agregarDocumental(documental);
+                controller.guardarContenidos("data/contenidos.csv");
+                System.out.println("Documental agregado y guardado correctamente.\n");
+                exito = true;
+            } catch (Exception e) {
+                System.out.println("Error: " + e.getMessage());
+                System.out.println("Por favor, ingrese los datos nuevamente.\n");
+            }
+        } while (!exito);
     }
 
-    private Documental crearDocumental() {
-        String titulo = solicitarTexto("Título");
-        int duracion = solicitarNumero("Duración en minutos");
-        String genero = solicitarTexto("Género");
-        String tema = solicitarTexto("Tema");
-        return new Documental(titulo, duracion, genero, tema);
-    }
-
+    /**
+     * Agrega investigadores a un documental.
+     * Permite al usuario agregar múltiples investigadores hasta que decida no agregar más.
+     *
+     * @param documental El documental al que se agregarán los investigadores.
+     */
     private void agregarInvestigadoresADocumental(Documental documental) {
         boolean agregarMas;
         do {
@@ -165,6 +205,10 @@ public class ContenidoView {
         } while (agregarMas);
     }
 
+    /**
+     * Muestra todos los contenidos audiovisuales registrados en el sistema.
+     * Recorre la lista de contenidos y muestra los detalles de cada uno.
+     */
     private void mostrarContenidos() {
         System.out.println("\n==============================");
         System.out.println("--- Contenidos Audiovisuales ---");
@@ -178,36 +222,10 @@ public class ContenidoView {
         System.out.println();
     }
 
-    private int leerEntero() {
-        while (true) {
-            try {
-                if (!scanner.hasNextLine()) {
-                    System.out.println("No hay más entrada disponible. Cerrando aplicación.");
-                    System.exit(0);
-                }
-                String input = scanner.nextLine();
-                return Integer.parseInt(input);
-            } catch (NumberFormatException e) {
-                System.out.print("Valor inválido. Intente de nuevo: ");
-            }
-        }
-    }
-
-    private String solicitarTexto(String campo) {
-        System.out.print(campo + ": ");
-        String texto = scanner.nextLine();
-        Validador.validarTexto(texto, campo);
-        return texto;
-    }
-
-    private int solicitarNumero(String campo) {
-        System.out.print(campo + ": ");
-        int numero = leerEntero();
-        Validador.validarNumeroPositivo(numero, campo);
-        return numero;
-    }
-
-    // Verifica si existen datos guardados y pregunta al usuario si desea cargarlos
+    /**
+     * Verifica si hay datos guardados en el archivo y pregunta al usuario si desea cargarlos.
+     * Si el usuario acepta, carga los datos desde el archivo.
+     */
     private void verificarDatosGuardados() {
         File archivo = new File(ARCHIVO_DATOS);
         if (archivo.exists() && archivo.length() > 0) {
