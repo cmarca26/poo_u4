@@ -18,6 +18,11 @@ public class CSVManager {
     }
 
     public static void writeCSV(String filePath, List<String[]> data) throws IOException {
+        File file = new File(filePath);
+        File parent = file.getParentFile();
+        if (parent != null && !parent.exists()) {
+            parent.mkdirs(); // Crea la carpeta si no existe
+        }
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath))) {
             for (String[] row : data) {
                 bw.write(String.join(",", row));
